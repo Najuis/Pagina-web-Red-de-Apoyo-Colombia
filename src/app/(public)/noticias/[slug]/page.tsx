@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { siteConfig } from "@/lib/site.config";
 import { PostDetail } from "@/components/posts/post-detail";
 
 type Props = {
@@ -36,8 +37,34 @@ export default async function NoticiaPage({ params }: Props) {
   const post = await getPost(slug, "NOTICIA");
   if (!post) notFound();
 
+  const pageUrl = `${siteConfig.url}/noticias/${post.slug}`;
+
+  const newsArticleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: post.title,
+    description: post.excerpt ?? post.content.slice(0, 160),
+    image: post.image ? [post.image] : undefined,
+    datePublished: post.createdAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    author: { "@type": "Person", name: post.author?.name ?? "Red de Apoyo Colombia" },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteConfig.url}/images/og-default.jpg`,
+      },
+    },
+    mainEntityOfPage: pageUrl,
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleJsonLd) }}
+      />
       <nav className="mb-6 flex items-center gap-1 text-sm text-muted-foreground" aria-label="Miga de pan">
         <Link href="/" className="transition hover:text-foreground">
           Inicio

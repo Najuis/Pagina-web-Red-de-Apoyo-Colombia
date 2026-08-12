@@ -7,6 +7,7 @@ import { SectionHeader } from "@/components/layout/section-header";
 import { PostCard } from "@/components/posts/post-card";
 import { EventCard } from "@/components/events/event-card";
 import { SocialLinks } from "@/components/layout/social-links";
+import { GoogleNewsFeed } from "@/components/news/google-news-feed";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 60;
@@ -111,6 +112,8 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      <GoogleNewsFeed />
 
       <SocialBanner />
     </>

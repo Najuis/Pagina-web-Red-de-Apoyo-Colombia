@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { PostCard } from "@/components/posts/post-card";
 import { SectionHeader } from "@/components/layout/section-header";
 import { PostFilters } from "@/components/posts/post-filters";
+import { GoogleNewsFeed } from "@/components/news/google-news-feed";
 
 export const metadata = {
   title: "Noticias",
@@ -49,6 +50,10 @@ export default async function NoticiasPage({
           <p className="mt-1 text-sm text-muted-foreground">Vuelve pronto para leer las novedades.</p>
         </div>
       )}
+
+      <div className="mt-16">
+        <GoogleNewsFeed />
+      </div>
     </div>
   );
 }

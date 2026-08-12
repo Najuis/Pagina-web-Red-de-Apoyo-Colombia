@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Proyecto: Red de Apoyo Colombia (plataforma de ayuda ante desastres)
 
-Plataforma de ayuda humanitaria (foco: terremoto del 10/08/2026 en Eje Cafetero y Cauca). Sin branding religioso/parroquial. Marca/sitio configurable en `src/lib/site.config.ts` (única fuente: nombre, redes, contacto, mapa — centrado en Colombia: `{ lat: 4.5, lng: -76.0 }, zoom: 8`).
+Plataforma de ayuda humanitaria (foco: terremoto del 10/08/2026 en Eje Cafetero y Cauca). Dominio de producción: **apoyocolombia.online**. Sin branding religioso/parroquial. Marca/sitio configurable en `src/lib/site.config.ts` (única fuente: nombre, redes, contacto, mapa — centrado en Colombia: `{ lat: 4.5, lng: -76.0 }, zoom: 8`).
 
 Dominios de datos (en `src/types/index.ts`):
 - **Categorías de publicación**: `EMERGENCIA, ALERTAS, AYUDA, DONACIONES, VOLUNTARIADO, COMUNIDAD, OTROS`.
@@ -58,6 +58,13 @@ Dominios de datos (en `src/types/index.ts`):
 - **Validación**: `src/lib/validations.ts` (schemas zod por modelo). **Formato**: `src/lib/format.ts` (fechas, `slugify`, `toDateTimeLocal`).
 - **Subida de imágenes**: `src/lib/upload.ts` — dev local a `public/uploads`, prod con Vercel Blob (`VERCEL_BLOB_READ_WRITE_TOKEN`). Route `src/app/api/upload/route.ts`.
 - **Mapas**: `src/components/map/community-map.tsx` (client, Leaflet) + wrappers `map-view.tsx` y `map-section.tsx` con `dynamic(..., { ssr: false })`.
+
+## Google News (integración e indexación)
+
+- **Feed en la página**: `src/components/news/google-news-feed.tsx` (Server Component) + `src/lib/google-news.ts`. Consume el RSS público de Google News (`news.google.com/rss/search?q=...&hl&gl&ceid`) con `rss-parser`; fetch cached (`cache: "force-cache"`, `next: { revalidate: 3600 }`). Queries/límite en `siteConfig.googleNews`. Aparece en home y `/noticias`.
+- **JSON-LD**: las noticias generan `NewsArticle` en `src/app/(public)/noticias/[slug]/page.tsx` (headline, fechas, autor, publisher, mainEntityOfPage).
+- **Sitemap de noticias**: `src/app/news-sitemap.xml/route.ts` (XML `news:news`), `dynamic = "force-dynamic"`, referenciado vía `host` en `robots.ts`.
+- **Despliegue (Hostinger)**: pasar `provider` en `prisma/schema.prisma` a `postgresql` y conectar a Supabase/Neon (Hostinger Node no incluye Postgres nativo). Configurar en hPanel: app type `next`, build `build`, output `.next`; variables `DATABASE_URL` (Postgres), `AUTH_SECRET` (nueva), `NEXT_PUBLIC_SITE_URL=https://apoyocolombia.online`.
 
 ## Estilo
 

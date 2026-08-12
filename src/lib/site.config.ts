@@ -4,11 +4,11 @@ export const siteConfig = {
   description:
     "Plataforma de apoyo ante desastres naturales en Colombia: alertas, personas y animales perdidos, centros de acopio, albergues y red de voluntarios e insumos.",
   locale: "es",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://apoyocolombia.example.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://apoyocolombia.online",
   ogImage: "/images/og-default.jpg",
   contact: {
-    email: "contacto@apoyocolombia.example.com",
-    phone: "+57 1 000 0000",
+    email: "contacto@apoyocolombia.online",
+    phone: "+57 300 000 0000",
     address: "Eje Cafetero y Cauca, Colombia",
     hours: "Atención 24/7 durante emergencias",
   },
@@ -16,8 +16,19 @@ export const siteConfig = {
     facebook: "https://facebook.com/",
     instagram: "https://instagram.com/",
     youtube: "https://youtube.com/",
-    whatsapp: "https://wa.me/571000000000",
+    whatsapp: "https://wa.me/573000000000",
     x: "https://x.com/",
+  },
+  googleNews: {
+    queries: [
+      "terremoto Eje Cafetero",
+      "emergencia terremoto Cauca Colombia",
+      "ayuda humanitaria Colombia",
+      "sismo Colombia",
+    ],
+    language: "es-419",
+    region: "CO",
+    resultLimit: 8,
   },
   map: {
     center: { lat: 4.5, lng: -76.0 },
