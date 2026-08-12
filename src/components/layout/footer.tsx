@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HeartHandshake, Mail, MapPin, Phone, Clock } from "lucide-react";
+import { HeartHandshake, Mail, MapPin, Clock } from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
 import { SocialLinks } from "@/components/layout/social-links";
 import { buttonVariants } from "@/components/ui/button";
@@ -55,10 +55,6 @@ export function Footer() {
             <li className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
               {siteConfig.contact.address}
-            </li>
-            <li className="flex items-center gap-2">
-              <Phone className="size-4 shrink-0" aria-hidden="true" />
-              {siteConfig.contact.phone}
             </li>
             <li className="flex items-center gap-2">
               <Mail className="size-4 shrink-0" aria-hidden="true" />

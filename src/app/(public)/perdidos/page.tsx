@@ -51,7 +51,7 @@ export default async function PerdidosPage({
         <Button asChild>
           <Link href="/perdidos/reportar">
             <PlusCircle className="size-4" aria-hidden="true" />
-            Reportar pérdida
+            Nuevo
           </Link>
         </Button>
       </div>

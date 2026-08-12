@@ -40,8 +40,8 @@ Dominios de datos (en `src/types/index.ts`):
 ## Resolver + RHF (trampa de tipos)
 
 `zodResolver` devuelve `Resolver<z.input, any, z.output>`; RHF 7.85 exige que el tipo del form case con el resolver. Patrón que funciona:
-- Formularios sin campos `coerce` (ej. `content-form.tsx`): `useForm<FormValues>` con `resolver: zodResolver(schema) as Resolver<FormValues>`.
-- Formularios con `z.coerce.date()`/`z.coerce.number()` (event/lost/item/location): el input (string) no overlap con el output (Date/number), usar `resolver: zodResolver(schema) as unknown as Resolver<FormValues>`.
+- Sin campos `coerce` (ej. `content-form.tsx`, `item-form.tsx`): el cast directo basta — `resolver: zodResolver(schema) as Resolver<FormValues>`.
+- Con `z.coerce.date()`/`z.coerce.number()` (event/lost/location): input (string) y output (Date/number) no overlap, TS rechaza el cast directo; usar `as unknown as Resolver<FormValues>`. Si un cast directo da error, prueba primero `as unknown as`.
 - Definir siempre un tipo `FormValues` explícito (con fechas/coords como `string`) en lugar de intersectar `Input & { ... }`.
 
 ## Comandos
@@ -69,4 +69,4 @@ Dominios de datos (en `src/types/index.ts`):
 ## Estilo
 
 - TypeScript estricto; **no usar `any`** (los casts `as unknown as` en resolvers son el único caso aceptado, documentado arriba).
-- Sin comentarios de código salvo que se pidan. Textos en español. Tailwind v4 con tokens CSS de marca en `src/app/globals.css` (primary deep blue `#1E3A8A`, secondary amber `#F59E0B`, accent verde `#10B981`; fuentes Playfair Display `--font-heading` + Inter `--font-sans`).
+- Sin comentarios de código salvo que se pidan. Textos en español. Tailwind v4 con variables CSS inline en `src/app/globals.css` (tokens oklch del tema shadcn nova en `:root`/`.dark`; el único hex de marca `#1E3A8A` es `themeColor` en `src/app/layout.tsx`). Fuentes en `src/app/layout.tsx` (next/font): Inter `--font-sans`, Playfair Display `--font-heading`, Geist Mono `--font-geist-mono`.

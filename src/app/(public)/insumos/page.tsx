@@ -40,18 +40,12 @@ export default async function InsumosPage({
 
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <ItemFilters />
-        {session?.user ? (
-          <Button asChild>
-            <Link href="/insumos/nuevo">
-              <PlusCircle className="size-4" aria-hidden="true" />
-              Publicar insumo/servicio
-            </Link>
-          </Button>
-        ) : (
-          <Button asChild variant="outline">
-            <Link href="/login?callbackUrl=/insumos/nuevo">Inicia sesión para publicar</Link>
-          </Button>
-        )}
+        <Button asChild>
+          <Link href={session?.user ? "/insumos/nuevo" : "/login?callbackUrl=/insumos/nuevo"}>
+            <PlusCircle className="size-4" aria-hidden="true" />
+            Nuevo
+          </Link>
+        </Button>
       </div>
 
       {items.length > 0 ? (

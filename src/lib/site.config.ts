@@ -7,9 +7,8 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://apoyocolombia.online",
   ogImage: "/images/og-default.jpg",
   contact: {
-    email: "contacto@apoyocolombia.online",
-    phone: "+57 300 000 0000",
-    address: "Eje Cafetero y Cauca, Colombia",
+    email: "apoyo.colombia26@gmail.com",
+    address: "Bogotá, Colombia",
     hours: "Atención 24/7 durante emergencias",
   },
   social: {
