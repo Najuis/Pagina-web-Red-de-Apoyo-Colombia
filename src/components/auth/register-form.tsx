@@ -30,6 +30,7 @@ export function RegisterForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [verificationLink, setVerificationLink] = useState<string | null>(null);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -45,6 +46,11 @@ export function RegisterForm() {
         return;
       }
 
+      if (result.verificationLink) {
+        setVerificationLink(result.verificationLink);
+        return;
+      }
+
       await signIn("credentials", {
         email: result.email,
         password: values.password,
@@ -53,6 +59,28 @@ export function RegisterForm() {
       router.push("/");
       router.refresh();
     });
+  }
+
+  if (verificationLink) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+          <p className="font-medium">Cuenta creada. Verifica tu correo electrónico.</p>
+          <p className="mt-1 text-muted-foreground">
+            Hemos enviado un enlace de verificación a tu correo. Ábrelo para activar tu cuenta.
+          </p>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Si el correo no llega, usa este enlace (envío de correo aún no configurado):
+          </p>
+          <code className="mt-2 block break-all rounded bg-background px-3 py-2 text-xs">
+            {verificationLink}
+          </code>
+        </div>
+        <Button type="button" className="w-full" onClick={() => router.push("/login")}>
+          Ir a iniciar sesión
+        </Button>
+      </div>
+    );
   }
 
   return (

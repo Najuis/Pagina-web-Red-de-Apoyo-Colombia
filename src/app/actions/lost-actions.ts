@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { lostReportSchema } from "@/lib/validations";
 import { auth } from "@/lib/auth";
-import { requireRole, type ActionResult } from "@/app/actions/post-actions";
+import type { ActionResult } from "@/app/actions/post-actions";
 
 export async function createLostReport(input: {
   type?: string;
@@ -39,12 +39,21 @@ export async function createLostReport(input: {
   return { ok: true, id: report.id };
 }
 
+export async function canManageLostReport(reportId: string): Promise<boolean> {
+  const session = await auth();
+  if (!session?.user) return false;
+  const userId = session.user.id as string;
+  if (session.user.role === "ADMIN" || session.user.role === "EDITOR") return true;
+
+  const report = await prisma.lostReport.findUnique({ where: { id: reportId } });
+  return report?.reporterId === userId;
+}
+
 export async function updateLostReport(
   id: string,
   input: Parameters<typeof createLostReport>[0]
 ): Promise<ActionResult> {
-  const user = await requireRole(["ADMIN", "EDITOR"]);
-  if (!user) return { ok: false, error: "No autorizado" };
+  if (!(await canManageLostReport(id))) return { ok: false, error: "No autorizado" };
 
   const existing = await prisma.lostReport.findUnique({ where: { id } });
   if (!existing) return { ok: false, error: "Reporte no encontrado" };
@@ -60,8 +69,7 @@ export async function updateLostReport(
 }
 
 export async function deleteLostReport(id: string): Promise<ActionResult> {
-  const user = await requireRole(["ADMIN", "EDITOR"]);
-  if (!user) return { ok: false, error: "No autorizado" };
+  if (!(await canManageLostReport(id))) return { ok: false, error: "No autorizado" };
 
   await prisma.lostReport.delete({ where: { id } });
   revalidatePath("/", "layout");
@@ -69,8 +77,7 @@ export async function deleteLostReport(id: string): Promise<ActionResult> {
 }
 
 export async function markFound(id: string): Promise<ActionResult> {
-  const user = await requireRole(["ADMIN", "EDITOR"]);
-  if (!user) return { ok: false, error: "No autorizado" };
+  if (!(await canManageLostReport(id))) return { ok: false, error: "No autorizado" };
 
   const existing = await prisma.lostReport.findUnique({ where: { id } });
   if (!existing) return { ok: false, error: "Reporte no encontrado" };

@@ -1,8 +1,11 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { decryptSecret } from "@/lib/crypto";
+import { verifyTotp } from "@/lib/two-factor";
+import { requireEmailVerification } from "@/lib/email";
 import type { Role } from "@/types";
 
 const credentialsSchema = z.object({
@@ -10,8 +13,64 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+class TwoFactorRequired extends CredentialsSignin {
+  code = "totp_required";
+}
+class InvalidTotp extends CredentialsSignin {
+  code = "invalid_totp";
+}
+class EmailNotVerified extends CredentialsSignin {
+  code = "email_not_verified";
+}
+class LoginRateLimited extends CredentialsSignin {
+  code = "too_many_attempts";
+}
+
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const MAX_ATTEMPTS = 6;
+
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function attemptKey(ip: string, email: string): string {
+  return `${ip}:${email}`;
+}
+
+function isRateLimited(key: string): boolean {
+  const entry = loginAttempts.get(key);
+  if (!entry) return false;
+  if (Date.now() > entry.resetAt) {
+    loginAttempts.delete(key);
+    return false;
+  }
+  return entry.count >= MAX_ATTEMPTS;
+}
+
+function recordFailure(key: string): void {
+  const now = Date.now();
+  const entry = loginAttempts.get(key);
+  if (!entry || now > entry.resetAt) {
+    loginAttempts.set(key, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
+    return;
+  }
+  entry.count += 1;
+}
+
+function resetAttempts(key: string): void {
+  loginAttempts.delete(key);
+}
+
+function requestIp(request?: Request): string {
+  const forwarded = request?.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return request?.headers.get("x-real-ip") ?? "unknown";
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
+  },
   pages: { signIn: "/login" },
   trustHost: true,
   providers: [
@@ -19,18 +78,52 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Contraseña", type: "password" },
+        code: { label: "Código 2FA", type: "text" },
       },
-      authorize: async (credentials) => {
+      authorize: async (credentials, request) => {
         const parsed = credentialsSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email },
-        });
-        if (!user || !user.password) return null;
+        const email = parsed.data.email.trim().toLowerCase();
+        const ip = requestIp(request);
+        const key = attemptKey(ip, email);
+
+        if (isRateLimited(key)) {
+          throw new LoginRateLimited();
+        }
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user?.password) {
+          recordFailure(key);
+          return null;
+        }
 
         const valid = await bcrypt.compare(parsed.data.password, user.password);
-        if (!valid) return null;
+        if (!valid) {
+          recordFailure(key);
+          return null;
+        }
+
+        resetAttempts(key);
+
+        if (requireEmailVerification() && !user.emailVerified) {
+          throw new EmailNotVerified();
+        }
+
+        if (user.twoFactorEnabled && user.twoFactorSecret) {
+          const code = typeof credentials?.code === "string" ? credentials.code.trim() : "";
+          if (!code) {
+            throw new TwoFactorRequired();
+          }
+          try {
+            const secret = decryptSecret(user.twoFactorSecret);
+            if (!verifyTotp(code, secret)) {
+              throw new InvalidTotp();
+            }
+          } catch {
+            throw new InvalidTotp();
+          }
+        }
 
         return {
           id: user.id,

@@ -22,6 +22,7 @@ async function main() {
       email: "admin@comunidad.local",
       password: adminPassword,
       role: "ADMIN",
+      emailVerified: new Date(),
     },
   });
 
@@ -31,6 +32,7 @@ async function main() {
       email: "editor@comunidad.local",
       password: editorPassword,
       role: "EDITOR",
+      emailVerified: new Date(),
     },
   });
 

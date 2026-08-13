@@ -59,6 +59,17 @@ Dominios de datos (en `src/types/index.ts`):
 - **Subida de imágenes**: `src/lib/upload.ts` — dev local a `public/uploads`, prod con Vercel Blob (`VERCEL_BLOB_READ_WRITE_TOKEN`). Route `src/app/api/upload/route.ts`.
 - **Mapas**: `src/components/map/community-map.tsx` (client, Leaflet) + wrappers `map-view.tsx` y `map-section.tsx` con `dynamic(..., { ssr: false })`.
 
+## Seguridad (implementada)
+
+- **NextAuth v5** sesión JWT: `maxAge` 7 días + `updateAge` 24h en `src/lib/auth.ts`. `authorize()` hace rate-limit en memoria (6 intentos/15 min por IP+email), verifica 2FA y (opcional) email verificado.
+- **2FA TOTP**: `otplib` v13 con **API funcional** (`generateSecret`, `generateURI`, `verifySync`) — NO existe `authenticator` (la API v12 cambió). El secreto se guarda cifrado AES-256-GCM (clave derivada de `AUTH_SECRET`) en `User.twoFactorSecret` via `src/lib/crypto.ts`. QR con `qrcode` (dataURL generado en Server Action). Flujo de login en 2 pasos: `authorize` lanza `CredentialsSignin` con `code = "totp_required"`; el cliente reenvía con `code`.
+- **Códigos de error de login** (client): `totp_required`, `invalid_totp`, `too_many_attempts`, `email_not_verified`.
+- **Verificación de email**: campos `emailVerified`/`emailVerificationToken`/`emailVerificationExpires` en `User`; token creado en registro; ruta `/verificar-email`. El bloqueo de login se activa con env `REQUIRE_EMAIL_VERIFICATION=true` (sin SMTP configurado, el enlace se muestra en la UI de registro).
+- **ABAC**: `canManageLostReport`/`canManageItem` (`lost-actions.ts`, `item-actions.ts`) permiten editar/borrar al dueño del recurso además de ADMIN/EDITOR (antes solo rol).
+- **Password**: registro exige min 8 + mayúscula + minúscula + número (`passwordSchema` en `validations.ts`). `login` solo exige no vacío.
+- `src/proxy.ts` protege `/admin` (ADMIN/EDITOR) y `/perfil` (cualquier sesión).
+- **Ojo**: rate-limit y cifrado 2FA son single-instance/memoria; si `AUTH_SECRET` cambia, los secretos 2FA quedan indescifrables (reconfigurar).
+
 ## Google News (integración e indexación)
 
 - **Feed en la página**: `src/components/news/google-news-feed.tsx` (Server Component) + `src/lib/google-news.ts`. Consume el RSS público de Google News (`news.google.com/rss/search?q=...&hl&gl&ceid`) con `rss-parser`; fetch cached (`cache: "force-cache"`, `next: { revalidate: 3600 }`). Queries/límite en `siteConfig.googleNews`. Aparece en home y `/noticias`.

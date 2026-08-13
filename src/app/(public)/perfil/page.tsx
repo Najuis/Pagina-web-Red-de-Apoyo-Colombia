@@ -3,8 +3,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SectionHeader } from "@/components/layout/section-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { LostCard } from "@/components/lost/lost-card";
 import { ItemCard } from "@/components/items/item-card";
+import { TwoFactorSection } from "@/components/auth/two-factor-section";
 import { timeAgo } from "@/lib/format";
 import { ROLES } from "@/types";
 
@@ -40,6 +42,14 @@ export default async function PerfilPage() {
             <p>
               <span className="font-medium">Email:</span> {user.email}
             </p>
+            <p className="flex items-center gap-2">
+              <span className="font-medium">Email verificado:</span>
+              {user.emailVerified ? (
+                <Badge variant="default">Sí</Badge>
+              ) : (
+                <Badge variant="outline">No</Badge>
+              )}
+            </p>
             <p>
               <span className="font-medium">Rol:</span>{" "}
               {ROLES.includes(user.role as (typeof ROLES)[number]) ? user.role : "Usuario"}
@@ -47,6 +57,15 @@ export default async function PerfilPage() {
             <p>
               <span className="font-medium">Miembro desde:</span> {timeAgo(user.createdAt)}
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-heading text-lg">Seguridad</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TwoFactorSection initiallyEnabled={user.twoFactorEnabled} />
           </CardContent>
         </Card>
 

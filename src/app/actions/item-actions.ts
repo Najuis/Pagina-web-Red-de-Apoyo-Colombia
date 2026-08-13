@@ -4,7 +4,17 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { itemSchema } from "@/lib/validations";
 import { auth } from "@/lib/auth";
-import { requireRole, type ActionResult } from "@/app/actions/post-actions";
+import type { ActionResult } from "@/app/actions/post-actions";
+
+export async function canManageItem(itemId: string): Promise<boolean> {
+  const session = await auth();
+  if (!session?.user) return false;
+  const userId = session.user.id as string;
+  if (session.user.role === "ADMIN" || session.user.role === "EDITOR") return true;
+
+  const item = await prisma.item.findUnique({ where: { id: itemId } });
+  return item?.publishedById === userId;
+}
 
 export async function createItem(input: {
   name: string;
@@ -39,8 +49,7 @@ export async function updateItem(
   id: string,
   input: Parameters<typeof createItem>[0]
 ): Promise<ActionResult> {
-  const user = await requireRole(["ADMIN", "EDITOR"]);
-  if (!user) return { ok: false, error: "No autorizado" };
+  if (!(await canManageItem(id))) return { ok: false, error: "No autorizado" };
 
   const existing = await prisma.item.findUnique({ where: { id } });
   if (!existing) return { ok: false, error: "Insumo no encontrado" };
@@ -56,8 +65,7 @@ export async function updateItem(
 }
 
 export async function deleteItem(id: string): Promise<ActionResult> {
-  const user = await requireRole(["ADMIN", "EDITOR"]);
-  if (!user) return { ok: false, error: "No autorizado" };
+  if (!(await canManageItem(id))) return { ok: false, error: "No autorizado" };
 
   await prisma.item.delete({ where: { id } });
   revalidatePath("/", "layout");

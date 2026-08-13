@@ -77,16 +77,23 @@ export const mapLocationSchema = z.object({
   description: z.string().max(1000).optional().nullable(),
 });
 
+const passwordSchema = z
+  .string()
+  .min(8, "La contraseña debe tener al menos 8 caracteres")
+  .regex(/[A-Z]/, "Debe incluir al menos una letra mayúscula")
+  .regex(/[a-z]/, "Debe incluir al menos una letra minúscula")
+  .regex(/[0-9]/, "Debe incluir al menos un número");
+
 export const loginSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  password: z.string().min(1, "Ingresa tu contraseña"),
 });
 
 export const registerSchema = z
   .object({
     name: z.string().min(2, "Ingresa tu nombre").max(100),
     email: z.string().email("Email inválido"),
-    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+    password: passwordSchema,
     confirmPassword: z.string().min(1, "Confirma tu contraseña"),
   })
   .refine((data) => data.password === data.confirmPassword, {
