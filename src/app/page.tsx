@@ -8,6 +8,7 @@ import { PostCard } from "@/components/posts/post-card";
 import { EventCard } from "@/components/events/event-card";
 import { SocialLinks } from "@/components/layout/social-links";
 import { GoogleNewsFeed } from "@/components/news/google-news-feed";
+import { YoutubeVideo } from "@/components/news/youtube-video";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 60;
@@ -115,6 +116,8 @@ export default async function HomePage() {
 
       <GoogleNewsFeed />
 
+      <YoutubeVideo videoId="_DdoXz60u3I" />
+
       <SocialBanner />
     </>
   );
@@ -144,6 +147,23 @@ function SocialBanner() {
         <Button asChild variant="secondary">
           <Link href="/avisos">Conoce las convocatorias activas</Link>
         </Button>
+        <div className="mt-6 text-sm text-white/85">
+          <a
+            href="https://unicef.org.co/terremoto-colombia?utm_source=google&utm_medium=cpc&utm_campaign=&utm_term=&utm_content=&utm_id=22981664040&gad_source=1&gad_campaignid=22981664040&gbraid=0AAAAAokvuXXFLX1hH9kmaXqHOxsfDxlOT&gclid=EAIaIQobChMI98SZufmdlgMVPJ5aBR2G1DNlEAAYASAAEgIMmfD_BwE"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Apoyo UNICEF Colombia
+          </a>
+          ·
+          <a
+            href="https://ayuda.cruzrojacolombiana.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ayuda Cruz Roja Colombiana
+          </a>
+        </div>
       </div>
     </section>
   );

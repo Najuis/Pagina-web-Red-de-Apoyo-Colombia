@@ -87,6 +87,14 @@
   --sidebar-ring: oklch(0.55 0.09 264);
 }
 
+html.light {
+  transition: color 300ms ease, background-color 300ms ease;
+}
+
+html.dark {
+  transition: color 300ms ease, background-color 300ms ease;
+}
+
 .dark {
   --background: oklch(0.16 0.02 262);
   --foreground: oklch(0.95 0.005 247);

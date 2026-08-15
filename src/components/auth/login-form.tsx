@@ -66,7 +66,6 @@ export function LoginForm() {
 
       const callbackUrl = searchParams.get("callbackUrl") ?? "/";
       router.push(callbackUrl);
-      router.refresh();
     });
   }
 
