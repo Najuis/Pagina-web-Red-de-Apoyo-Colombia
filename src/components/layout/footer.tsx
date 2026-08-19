@@ -81,7 +81,7 @@ export function Footer() {
           <p>
             © {year} {siteConfig.name}. Todos los derechos reservados.
           </p>
-          <p>Hecho con solidaridad.</p>
+          <p>Hecho con solidaridad. Carolina Ramirez Patiño y Miguel Angel Diaz Gomez</p>
         </div>
       </div>
     </footer>

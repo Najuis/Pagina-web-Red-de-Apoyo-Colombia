@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -51,7 +52,7 @@ export const viewport: Viewport = {
   themeColor: "#1E3A8A",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="es"

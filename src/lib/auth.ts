@@ -7,6 +7,7 @@ import { decryptSecret } from "@/lib/crypto";
 import { verifyTotp } from "@/lib/two-factor";
 import { requireEmailVerification } from "@/lib/email";
 import type { Role } from "@/types";
+import logger from "@/lib/logger";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -50,13 +51,16 @@ function recordFailure(key: string): void {
   const entry = loginAttempts.get(key);
   if (!entry || now > entry.resetAt) {
     loginAttempts.set(key, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
+    logger.info({ key: "redacted" }, "Login attempt recorded (masked)");
     return;
   }
   entry.count += 1;
+  logger.warn({ key: "redacted" }, "Login attempt count incremented (masked)");
 }
 
 function resetAttempts(key: string): void {
   loginAttempts.delete(key);
+  logger.info({ key: "redacted" }, "Login attempts reset (masked)");
 }
 
 function requestIp(request?: Request): string {
