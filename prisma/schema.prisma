@@ -1,13 +1,11 @@
-// Prisma schema — SQLite local para desarrollo.
-// Para migrar a PostgreSQL: cambiar provider a "postgresql", ajustar DATABASE_URL
-// y ejecutar `npx prisma migrate dev` de nuevo.
+// Prisma schema — PostgreSQL (Neon) para producción y desarrollo.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -21,8 +19,11 @@ model User {
   emailVerified DateTime?
   emailVerificationToken String? @unique
   emailVerificationExpires DateTime?
+  passwordResetToken String? @unique
+  passwordResetExpires DateTime?
   twoFactorSecret String?
   twoFactorEnabled Boolean @default(false)
+  isActive         Boolean      @default(true)
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   posts      Post[]
