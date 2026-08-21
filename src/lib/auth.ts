@@ -23,6 +23,9 @@ class InvalidTotp extends CredentialsSignin {
 class EmailNotVerified extends CredentialsSignin {
   code = "email_not_verified";
 }
+class AccountDisabled extends CredentialsSignin {
+  code = "account_disabled";
+}
 class LoginRateLimited extends CredentialsSignin {
   code = "too_many_attempts";
 }
@@ -109,6 +112,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         resetAttempts(key);
+
+        if (!user.isActive) {
+          throw new AccountDisabled();
+        }
 
         if (requireEmailVerification() && !user.emailVerified) {
           throw new EmailNotVerified();

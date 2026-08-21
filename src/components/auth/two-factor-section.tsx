@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   generateTwoFactorSetupAction,
+  showTwoFactorQrAction,
   enableTwoFactorAction,
   disableTwoFactorAction,
 } from "@/app/actions/auth-actions";
@@ -29,6 +30,19 @@ export function TwoFactorSection({ initiallyEnabled }: Props) {
       const result = await generateTwoFactorSetupAction();
       if (!result.ok || !result.qrDataUrl) {
         toast.error(result.error ?? "No se pudo preparar 2FA");
+        return;
+      }
+      setQrDataUrl(result.qrDataUrl);
+      setAccount(result.account ?? "");
+    });
+  }
+
+  function showQr() {
+    setCode("");
+    startTransition(async () => {
+      const result = await showTwoFactorQrAction();
+      if (!result.ok || !result.qrDataUrl) {
+        toast.error(result.error ?? "No se pudo mostrar el código QR");
         return;
       }
       setQrDataUrl(result.qrDataUrl);
@@ -73,6 +87,33 @@ export function TwoFactorSection({ initiallyEnabled }: Props) {
         <p className="text-sm text-muted-foreground">
           Necesitarás tu app de autenticación (Google Authenticator, Authy…) al iniciar sesión.
         </p>
+        {qrDataUrl ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Escanea este código con tu app de autenticación
+              {account ? <span className="text-foreground"> (cuenta: {account})</span> : null}:
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={qrDataUrl}
+              alt="Código QR para 2FA"
+              className="mx-auto size-52 rounded-lg border"
+            />
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setQrDataUrl(null)}
+              disabled={pending}
+            >
+              Ocultar código QR
+            </Button>
+          </div>
+        ) : (
+          <Button variant="outline" onClick={showQr} disabled={pending}>
+            {pending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+            Ver código QR
+          </Button>
+        )}
         <div className="flex items-end gap-2">
           <div className="grid flex-1 gap-1.5">
             <Label htmlFor="disable-code">Código actual</Label>

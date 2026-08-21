@@ -10,6 +10,7 @@ import {
   Search,
   Package,
   MapPin,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ const links = [
   { href: "/admin/perdidos", label: "Perdidos", Icon: Search },
   { href: "/admin/insumos", label: "Insumos y ayuda", Icon: Package },
   { href: "/admin/ubicaciones", label: "Ubicaciones", Icon: MapPin },
+  { href: "/admin/usuarios", label: "Usuarios", Icon: Users, highlight: true },
 ];
 
 export function AdminSidebar() {
@@ -28,7 +30,7 @@ export function AdminSidebar() {
 
   return (
     <nav className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible" aria-label="Panel de administración">
-      {links.map(({ href, label, Icon, exact }) => {
+      {links.map(({ href, label, Icon, exact, highlight }) => {
         const active = exact ? pathname === href : pathname.startsWith(href);
         return (
           <Link
@@ -36,9 +38,13 @@ export function AdminSidebar() {
             href={href}
             className={cn(
               "flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition",
-              active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              highlight
+                ? active
+                  ? "bg-amber-500 text-white"
+                  : "text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"
+                : active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <Icon className="size-4" aria-hidden="true" />

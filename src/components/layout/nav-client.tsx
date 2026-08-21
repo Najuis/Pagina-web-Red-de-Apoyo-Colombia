@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Menu, Moon, Sun, LogOut, LayoutDashboard, User as UserIcon } from "lucide-react";
+import { Menu, Moon, Sun, LayoutDashboard, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/types";
 
@@ -38,6 +39,7 @@ export function NavClient({
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const isAdmin = user?.role === "ADMIN" || user?.role === "EDITOR";
 
   return (
@@ -70,7 +72,7 @@ export function NavClient({
         </Button>
 
         {user ? (
-          <DropdownMenu>
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
             <DropdownMenuTrigger asChild>
               <button
                 className="flex items-center gap-2 rounded-full p-1 outline-none transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
@@ -105,12 +107,7 @@ export function NavClient({
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/api/auth/signout">
-                  <LogOut className="mr-2 size-4" aria-hidden="true" />
-                  Cerrar sesión
-                </Link>
-              </DropdownMenuItem>
+              <LogoutButton onOpenChange={(next) => next && setMenuOpen(false)} />
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
@@ -157,9 +154,7 @@ export function NavClient({
                       <Link href="/admin">Panel de administración</Link>
                     </Button>
                   )}
-                  <Button asChild variant="ghost" onClick={() => setOpen(false)}>
-                    <Link href="/api/auth/signout">Cerrar sesión</Link>
-                  </Button>
+<LogoutButton onOpenChange={(next) => next && setOpen(false)} />
                 </div>
               ) : (
                 <Button asChild className="w-full" onClick={() => setOpen(false)}>

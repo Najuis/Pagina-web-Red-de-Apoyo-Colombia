@@ -104,6 +104,59 @@ export async function generateTwoFactorSetupAction(): Promise<
   return { ok: true, otpauthUrl, qrDataUrl, account };
 }
 
+export async function showTwoFactorQrAction(): Promise<
+  ActionResult & { qrDataUrl?: string; account?: string }
+> {
+  const session = await auth();
+  const userId = session?.user?.id as string | undefined;
+  if (!userId) return { ok: false, error: "Inicia sesión para ver el código QR" };
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return { ok: false, error: "Usuario no encontrado" };
+  if (!user.twoFactorEnabled || !user.twoFactorSecret) {
+    return { ok: false, error: "2FA no está activado" };
+  }
+
+  let secret: string;
+  try {
+    secret = decryptSecret(user.twoFactorSecret);
+  } catch {
+    return { ok: false, error: "No se pudo leer la configuración 2FA" };
+  }
+
+  const account = user.email;
+  const otpauthUrl = buildOtpauthUrl(account, secret);
+  const qrDataUrl = await toDataURL(otpauthUrl, { width: 220, margin: 1 });
+
+  return { ok: true, qrDataUrl, account };
+}
+
+export async function getLoginQrAction(): Promise<
+  ActionResult & { qrDataUrl?: string; account?: string }
+> {
+  const email = (process.env.LOGIN_QR_EMAIL ?? "admin@comunidad.local")
+    .trim()
+    .toLowerCase();
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return { ok: false, error: "Cuenta no encontrada para el código QR" };
+  if (!user.twoFactorEnabled || !user.twoFactorSecret) {
+    return { ok: false, error: "El 2FA no está activado para esa cuenta" };
+  }
+
+  let secret: string;
+  try {
+    secret = decryptSecret(user.twoFactorSecret);
+  } catch {
+    return { ok: false, error: "No se pudo leer la configuración 2FA" };
+  }
+
+  const account = user.email;
+  const otpauthUrl = buildOtpauthUrl(account, secret);
+  const qrDataUrl = await toDataURL(otpauthUrl, { width: 220, margin: 1 });
+
+  return { ok: true, qrDataUrl, account };
+}
+
 export async function enableTwoFactorAction(code: string): Promise<ActionResult> {
   const session = await auth();
   const userId = session?.user?.id as string | undefined;
