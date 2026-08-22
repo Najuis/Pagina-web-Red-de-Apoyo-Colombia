@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 import { siteConfig } from "@/lib/site.config";
 import "./globals.css";
 
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <main className="flex-1">{children}</main>
           <Footer />
           <Toaster position="top-right" richColors />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
