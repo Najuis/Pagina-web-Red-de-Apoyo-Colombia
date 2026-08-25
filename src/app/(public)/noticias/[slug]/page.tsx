@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { siteConfig } from "@/lib/site.config";
 import { PostDetail } from "@/components/posts/post-detail";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: Promise<{ slug: string }>;
 };

@@ -4,6 +4,8 @@ import { ItemForm } from "@/components/forms/item-form";
 import { SectionHeader } from "@/components/layout/section-header";
 import { Card, CardContent } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Publicar insumo/servicio",
   description: "Publica un insumo o ayuda disponible para la red de apoyo.",

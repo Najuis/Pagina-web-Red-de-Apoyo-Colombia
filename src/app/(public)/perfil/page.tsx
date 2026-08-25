@@ -10,6 +10,8 @@ import { TwoFactorSection } from "@/components/auth/two-factor-section";
 import { timeAgo } from "@/lib/format";
 import { ROLES } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Mi perfil",
   description: "Tu información y actividad en la red de apoyo.",

@@ -5,6 +5,8 @@ import { ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { PostDetail } from "@/components/posts/post-detail";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: Promise<{ slug: string }>;
 };

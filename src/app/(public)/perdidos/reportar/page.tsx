@@ -4,6 +4,8 @@ import { LostForm } from "@/components/forms/lost-form";
 import { SectionHeader } from "@/components/layout/section-header";
 import { Card, CardContent } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Reportar una pérdida",
   description: "Reporta una persona o animal perdido para que la red de apoyo te ayude.",

@@ -4,6 +4,8 @@ import { ContentForm } from "@/components/forms/content-form";
 import { SectionHeader } from "@/components/layout/section-header";
 import { Card, CardContent } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Nueva publicación",
   description: "Comparte una publicación con la red de apoyo.",
