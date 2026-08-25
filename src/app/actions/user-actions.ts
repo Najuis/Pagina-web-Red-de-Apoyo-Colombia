@@ -19,3 +19,19 @@ export async function toggleUserActiveAction(
   revalidatePath("/admin/usuarios");
   return { ok: true };
 }
+
+export async function deleteUserAction(userId: string): Promise<ActionResult> {
+  const user = await requireRole(["ADMIN"]);
+  if (!user) return { ok: false, error: "No autorizado: solo ADMIN puede eliminar usuarios" };
+
+  if (user.id === userId) {
+    return { ok: false, error: "No puedes eliminarte a ti mismo" };
+  }
+
+  await prisma.user.delete({
+    where: { id: userId },
+  });
+
+  revalidatePath("/admin/usuarios");
+  return { ok: true };
+}

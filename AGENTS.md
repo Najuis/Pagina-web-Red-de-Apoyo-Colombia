@@ -41,8 +41,8 @@
 
 - `npm run dev` — dev server
 - `npm run build` / `npm run lint` (= `eslint`, flat config) / `npm run typecheck` (`tsc --noEmit`)
-- **No hay test suite**: `npm test` no existe; el job `test` del CI (`ci.yml`) es un no-op. El flujo CI real es `lint → build`
-- `npm run prisma:generate` / `npm run prisma:migrate` (`prisma migrate dev`) / `npm run prisma:seed` (`tsx prisma/seed.ts`)
+- **No hay test suite**: `npm test` no existe; el job `test` del CI (`ci.yml`) es un no-op. El flujo CI real es `typecheck → lint → build`
+- `npm run prisma:generate` / `npm run prisma:migrate` (`prisma migrate dev`) / `npm run prisma:seed` (`prisma db seed` → `tsx prisma/seed.ts`)
 - **`build` = `prisma generate && prisma migrate deploy && next build`**; `migrate deploy` y `prisma:migrate` requieren `DATABASE_URL` (Neon). Migración inicial `0_init` ya creada y marcada como aplicada
 - **Ojo (Windows)**: si `next dev` está corriendo, `prisma generate`/`build` falla con `EPERM` (DLL `query_engine-windows.dll.node` bloqueada). Detener el dev server antes de generar/buildear y reiniciarlo después
 - **Seed**: `admin@comunidad.local / Admin123!` (ADMIN), `editor@comunidad.local / Editor123!` (EDITOR). Datos de ejemplo con coordenadas de Colombia. Reset total de tablas antes de insertar
@@ -65,7 +65,7 @@
 - **Verificación email**: token creado en registro, ruta `/verificar-email`. `REQUIRE_EMAIL_VERIFICATION=true` bloquea login. **No se envía correo en registro**: el enlace se devuelve en la UI. `src/lib/mailer.ts` (nodemailer/Gmail `GMAIL_USER`+`GMAIL_APP_PASSWORD`) define `sendVerificationEmail`/`sendPasswordResetEmail` pero **ninguna se invoca todavía** (no hay ruta de reset)
 - **ABAC**: `canManageLostReport`/`canManageItem` (`lost-actions.ts`, `item-actions.ts`) permiten editar/borrar al dueño del recurso además de ADMIN/EDITOR
 - **Password**: registro exige min 8 + mayúscula + minúscula + número (`passwordSchema` en `validations.ts`), bcrypt ronda 12. `login` solo exige no vacío
-- **Headers de seguridad**: definidos en `next.config.ts` `async headers()` global (CSP, HSTS, X-Frame-Options, nosniff, etc.). **Ojo**: la directiva CSP `connect-self;` está malformada (falta `-src`); corregir al tocar `next.config.ts`. `helmet` está en package.json pero no se importa en ningún sitio
+- **Headers de seguridad**: definidos en `next.config.ts` `async headers()` global (CSP, HSTS, X-Frame-Options, nosniff, etc.). CSP usa `connect-src 'self';` (correcto). `helmet` está en package.json pero no se importa en ningún sitio
 - **CORS**: manual en `src/proxy.ts` con whitelist `ALLOWED_ORIGINS` (default localhost + apoyocolombia.online)
 - **OWASP**: Inyección SQL mitigado con Prisma ORM. XSS: sanitización básica en Zod, `escapeXml` en news-sitemap. CSRF: protección por defecto en `api/auth/[...nextauth]`. Upload valida MIME (jpeg/png/webp/gif) y 5MB
 - **Logging**: `src/lib/logger.ts` (pino) con `redact()` que enmascara `password`, `email`, `apiKey`, `authToken`, `twoFactorSecret`, etc. Usado en `auth.ts` y en el route de GDPR

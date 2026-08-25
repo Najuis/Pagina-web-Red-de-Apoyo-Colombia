@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UserActiveToggle } from "@/components/admin/user-active-toggle";
+import { UserDeleteButton } from "@/components/admin/user-delete-button";
 
 export const metadata = {
   title: "Usuarios",
@@ -80,12 +81,17 @@ export default async function AdminUsuariosPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 border-t pt-3">
-                    <span className="text-xs text-muted-foreground">
-                      {user.emailVerified ? "Email verificado" : "Email sin verificar"}
-                    </span>
-                    <UserActiveToggle userId={user.id} isActive={user.isActive} />
-                  </div>
+<div className="flex items-center justify-between gap-2 border-t pt-3">
+                      <span className="text-xs text-muted-foreground">
+                        {user.emailVerified ? "Email verificado" : "Email sin verificar"}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <UserActiveToggle userId={user.id} isActive={user.isActive} />
+                        {user.role !== "ADMIN" && (
+                          <UserDeleteButton userId={user.id} userName={user.name} />
+                        )}
+                      </div>
+                    </div>
                 </div>
               ))}
             </div>
