@@ -12,6 +12,8 @@ export const metadata = {
   description: "Publicaciones de la red de apoyo: historias, testimonios y llamados de ayuda.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function PublicacionesPage({
   searchParams,
 }: {

@@ -10,6 +10,8 @@ export const metadata = {
   description: "Últimas noticias y alertas sobre la emergencia en Eje Cafetero y Cauca.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function NoticiasPage({
   searchParams,
 }: {

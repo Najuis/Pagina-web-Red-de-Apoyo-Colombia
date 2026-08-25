@@ -8,6 +8,8 @@ export const metadata = {
   description: "Voluntariado, donaciones, jornadas de ayuda y capacitación tras el terremoto del 10 de agosto de 2026.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function AvisosPage({
   searchParams,
 }: {

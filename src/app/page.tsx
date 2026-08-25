@@ -11,7 +11,7 @@ import { GoogleNewsFeed } from "@/components/news/google-news-feed";
 import { YoutubeVideo } from "@/components/news/youtube-video";
 import { Button } from "@/components/ui/button";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [featuredPosts, recentPosts, news, upcomingEvents] = await Promise.all([

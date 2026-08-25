@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { siteConfig } from "@/lib/site.config";
 
+export const dynamic = "force-dynamic";
+
 const staticRoutes = [
   "",
   "/publicaciones",

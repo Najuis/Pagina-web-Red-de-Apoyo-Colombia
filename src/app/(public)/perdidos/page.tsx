@@ -14,6 +14,8 @@ export const metadata = {
     "Busca o reporta personas y animales perdidos tras el terremoto. Ayúdanos a reunirlos con sus familias.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function PerdidosPage({
   searchParams,
 }: {

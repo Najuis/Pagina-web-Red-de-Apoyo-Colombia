@@ -14,6 +14,8 @@ export const metadata = {
   description: "Busca en toda la plataforma de apoyo.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function BuscarPage({
   searchParams,
 }: {

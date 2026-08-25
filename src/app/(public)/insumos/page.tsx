@@ -12,6 +12,8 @@ export const metadata = {
   description: "Directorio de insumos y ayuda disponible: alimentos, agua, albergue, transporte y más.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function InsumosPage({
   searchParams,
 }: {

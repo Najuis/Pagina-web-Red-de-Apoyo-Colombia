@@ -7,6 +7,8 @@ export const metadata = {
   description: "Encuentra centros de acopio, albergues, centros de salud y puntos de ayuda tras la emergencia.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function MapaPage() {
   const locations = await prisma.mapLocation.findMany({
     orderBy: { type: "asc" },
