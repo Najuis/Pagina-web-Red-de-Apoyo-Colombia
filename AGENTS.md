@@ -38,3 +38,12 @@
 ## TypeScript / Estilo
 - **Estricto**: no usar `any` (el único `as unknown as` aceptado es el de `zodResolver` internamente).
 - Textos en español.
+
+## Limitaciones de build
+- Este repo contiene solo archivos de configuración (`.devcontainer/`, `vercel.json`, `package.json`, `AGENTS.md`, `README.md`).
+- **No tiene** directorio `src/`, ni `app/`, ni `prisma/schema.prisma`. Por eso:
+  - `next build` local falla: *"Couldn't find any `pages` or `app` directory"*
+  - `npm run build` falla: `prisma generate` no encuentra schema.prisma
+  - Vercel build falla con `ENOENT: no such file or directory, open '/vercel/path0/package.json'` — el entorno limpio no tiene `node_modules` ni la estructura de app completa.
+- Para un build/desplegado funcional se requiere: crear `prisma/schema.prisma`, agregar componentes en `src/app/` o `src/pages/`, y ejecutar `npm install` en el entorno de despliegue.
+- El propósito de este repo es servir de instrucción para sesiones OpenCode, no como repositorio de código de app completo.
