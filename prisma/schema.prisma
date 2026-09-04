@@ -1,0 +1,126 @@
+// Prisma schema — PostgreSQL (Neon) para producción y desarrollo.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  id         String       @id @default(cuid())
+  name       String
+  email      String       @unique
+  password   String
+  role       String       @default("USER") // ADMIN | EDITOR | USER
+  image      String?
+  emailVerified DateTime?
+  emailVerificationToken String? @unique
+  emailVerificationExpires DateTime?
+  passwordResetToken String? @unique
+  passwordResetExpires DateTime?
+  twoFactorSecret String?
+  twoFactorEnabled Boolean @default(false)
+  isActive         Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  posts      Post[]
+  lostReports LostReport[]
+  items      Item[]
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String
+  excerpt   String?
+  image     String?
+  kind      String   @default("PUBLICACION") // PUBLICACION | NOTICIA
+  category  String   @default("COMUNIDAD")   // POST_CATEGORIES
+  status    String   @default("BORRADOR")    // PUBLICADO | BORRADOR
+  featured  Boolean  @default(false)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kind, status])
+  @@index([status])
+  @@index([featured])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  type        String   @default("EVENTO") // EVENT_TYPES
+  location    String?
+  image       String?
+  startAt     DateTime
+  endAt       DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startAt])
+  @@index([type])
+}
+
+model LostReport {
+  id            String   @id @default(cuid())
+  type          String   @default("PERSONA") // PERSONA | ANIMAL
+  status        String   @default("PERDIDO") // PERDIDO | ENCONTRADO | BUSQUEDA_ACTIVA
+  name          String
+  description   String
+  characteristics String?
+  lastLocation  String
+  latitude      Float?
+  longitude     Float?
+  lostDate      DateTime
+  photo         String?
+  contactType   String   @default("WHATSAPP") // CONTACT_TYPES
+  contactValue  String
+  reporterId    String?
+  reporter      User?    @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+}
+
+model Item {
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  category     String   @default("OTROS") // ITEM_CATEGORIES
+  image        String?
+  price        Float?
+  location     String?
+  contactType  String   @default("WHATSAPP") // CONTACT_TYPES
+  contactValue String
+  publishedById String?
+  publishedBy  User?    @relation(fields: [publishedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([category])
+}
+
+model MapLocation {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   @default("OTRO") // LOCATION_TYPES
+  latitude    Float
+  longitude   Float
+  address     String?
+  hours       String?
+  phone       String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+}
