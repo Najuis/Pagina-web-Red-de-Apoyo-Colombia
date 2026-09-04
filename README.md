@@ -50,7 +50,6 @@ Plataforma web para Red de Apoyo Colombia que facilita la ayuda comunitaria ante
 Crear/actualizar `.env` con:
 
 ```
-DATABASE_URL="postgresql://neondb_owner:npg_GqRaPQKC5X2D@ep-quiet-dawn-ayuacty8-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 
 AUTH_SECRET="generar-con-npx-auth-secret"  # Ejecutar: npx auth secret
 
